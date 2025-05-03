@@ -7,14 +7,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "tanishk07",
-  database: "InfluencerDB",
-};
+const pool = mysql.createPool({
+  uri: process.env.DATABASE_URL,
+});
 
-const pool = mysql.createPool(dbConfig);
+app.get("/test-db", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT NOW()");
+    res.json({ serverTime: rows[0] });
+  } catch (err) {
+    console.error("DB connection failed:", err);
+    res.status(500).json({ error: "Failed to connect to database" });
+  }
+});
 
 // Database connection middleware
 app.use(async (req, res, next) => {
