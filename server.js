@@ -104,6 +104,15 @@ app.post("/find-influencers", async (req, res) => {
     res.status(500).json({ error: "Error fetching influencers" });
   }
 });
+app.get("/all-influencers", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM influencers ORDER BY timestamp DESC");
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ Failed to fetch influencers:", err);
+    res.status(500).json({ error: "Failed to fetch influencers" });
+  }
+});
 
 // ✅ Predict single price
 app.get("/predict-price", async (req, res) => {
